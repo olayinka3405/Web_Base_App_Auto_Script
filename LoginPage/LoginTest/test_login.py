@@ -4,33 +4,52 @@ import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.firefox.service import Service as FirefoxService
+from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.edge.service import Service as EdgeService
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 from Web_Base_App_Auto_Script.LoginPage.login_page import LoginPage
+from Web_Base_App_Auto_Script.Utilities.test_data import TestData
 
-@pytest.fixture()
-def driver():
-    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
-    driver.implicitly_wait(10)
-    driver.maximize_window()
-    yield driver
-    driver.quit()
+class OpenBrowsers:
 
-def test_login_valid_credentials(driver):
-    login_page = LoginPage(driver)
+    # running the same tests across different browsers: cross-browser testing.
+    @pytest.fixture(scope="function", params=['chrome', 'firefox', 'edge'])
+    def initialize_driver(self, request):
+        global driver
+        if request.param == 'chrome':
+            driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        elif request.param == 'firefox':
+            driver = webdriver.Firefox(service=FirefoxService(GeckoDriverManager().install()))
+        elif request.param == 'edge':
+            driver = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
 
-    # Given: The user is on the login page
-    login_page.open_page("https://trytestingthis.netlify.app/")
+        # Set up common configurations for the browser
+        driver.implicitly_wait(20)
+        driver.maximize_window()
 
-    # When: They enter valid credentials
-    login_page.login_details("test", "test")
+        # Provide the WebDriver instance to the test
+        yield driver
 
-    # And: Click login button
-    # Then: They should be logged in successfully
-    login_page.click_login_button()
+        # Teardown: Close the browser after all tests have run
+        driver.quit()
+@pytest.mark.usefixtures("initialize_driver")
+class TestLogin(OpenBrowsers):
+    def test_login_valid_credentials(self, initialize_driver):
+        driver = initialize_driver
+        login_page = LoginPage(driver)
 
-    assert "Successful" in driver.page_source
+        # Given: The user is on the login page
+        login_page.open_page(TestData.url)
 
+        # When: They enter valid credentials
+        login_page.enter_login_details(TestData.username, TestData.password)
 
+        # And: Click login button
+        login_page.click_login_button()
 
+        # Then: They should be logged in successfully
+        assert "Successful" in driver.page_source
 
 
 
