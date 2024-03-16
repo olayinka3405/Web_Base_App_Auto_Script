@@ -20,9 +20,10 @@ def test_login_valid_credentials(driver):
     # Given: The user is on the login page
     login_page.open_page("https://trytestingthis.netlify.app/")
 
-    # When: They enter valid credentials and click login
+    # When: They enter valid credentials
     login_page.login_details("test", "test")
 
+    # And: Click login button
     # Then: They should be logged in successfully
     login_page.click_login_button()
 
