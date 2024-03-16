@@ -8,7 +8,7 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.edge.service import Service as EdgeService
 from webdriver_manager.microsoft import EdgeChromiumDriverManager
-from Web_Base_App_Auto_Script.LoginPage.login_page import LoginPage
+from Web_Base_App_Auto_Script.Login_Page.login_page import LoginPage
 from Web_Base_App_Auto_Script.Utilities.test_data import TestData
 
 class OpenBrowsers:
