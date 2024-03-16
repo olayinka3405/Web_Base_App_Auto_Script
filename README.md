@@ -1,4 +1,5 @@
 Web_Base_App_Auto_Script
+
 Login Functionality
 
 ## Automated Tests for Login Functionality
